@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/static/index_style.css">
+    <script src="/static/functions.js"></script>
+</head>
+<body>
+    <div>
+        <h1 class="header">Automotive Telemetry Tracker</h1>
+    </div>
+        <div class="button">
+            <button id="initialbutton" type="button" onclick="buttonClick()">Begin Tracking</button>
+        </div>
+    <div>
+        <h3 id="buttoncheck"></h3>
+        <select style="display: none;" id="list"></select> <button id="connectbutton" type="button" style="display: none;" onclick="connectToPort()">Connect</button>
+        <div id="PIDOptionsList">
+            <button id="selectallbutton" type="button" style="display: none;" onclick="PIDSubmission(1)">Select All</button>
+            <button id="clearbutton" style="display: none;" onclick="PIDSubmission(0)">Clear</button>        
+        </div>
+        <button id="submitPID" style="display: none"; onclick="PIDSubmission(2)">Submit</button>
+    </div>
+</body>
+</html>
