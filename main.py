@@ -17,26 +17,26 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get('/')
 def main(request: Request):
-    return templates.TemplateResponse(request, 'indexalt.html', {})
+    return templates.TemplateResponse(request, 'index.html', {})
 
 @app.get('/initialize')
 def initialize():
     global obd
     obd = OBD()
-    # if obd.PORTS.PORTS:
-    return {'success': True, 'ports': {0:'yes', 1:'no', 2:'maybe'}} # TO DO
-    # else:
-        # return {'success': False}
+    if obd.PORTS.PORTS:
+        return {'success': True, 'ports': obd.PORTS.PORTS} # TO DO
+    else:
+        return {'success': False}
 
 @app.post('/portConnection')
 async def connectPort(request: Request):
     global obd
     json_data = await request.json()
-    # selected_port = int(json_data["selected_port"])
-    # obd.connect(selected_port)
-    # PIDList = obd.supportedPIDs()
-    # return {'device': obd.PORTS.PORTS[selected_port], 'PIDList': PIDList}
-    return {'device': 0, 'PIDList': [('11', 'Port A'), ('12', 'Port B')]}
+    selected_port = int(json_data["selected_port"])
+    obd.connect(selected_port)
+    PIDList = obd.supportedPIDs()
+    return {'device': obd.PORTS.PORTS[selected_port], 'PIDList': PIDList}
+    # return {'device': 0, 'PIDList': [('11', 'Port A'), ('12', 'Port B')]}
         
 @app.post('/trackpids')
 async def trackPIDs(request: Request):
