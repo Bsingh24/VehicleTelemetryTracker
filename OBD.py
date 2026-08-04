@@ -322,17 +322,27 @@ class OBD:
                     response = self.DEVICE.read(self.DEVICE.in_waiting).decode(errors="ignore").replace('\r', '').replace('>', '').strip()
                     split_response = response.split(' ')
                     if len(split_response) > 2 and split_response[1] in self.COMMAND.FUNCTIONS:
-                        res = self.COMMAND.FUNCTIONS[split_response[1]](response)
+                        self.COMMAND.FUNCTIONS[split_response[1]](response)
                     self.LOG.logResponse(command, response)
-                    yield {
-                        "command": command,
-                        "response": res,
-                        "timestamp": timestamp 
-                    }
-
                 except Exception as e:
                     print(f'Error on command: {command}: {e}')
                     break
         print('Engine off...stopping recording..saving data')
         self.COMMAND.saveData()
         self.LOG.saveLogs()
+
+    def singleCommand(self, command):
+        try:
+            self.DEVICE.reset_input_buffer()
+            self.DEVICE.write((command + "\r").encode())
+            time.sleep(0.25)
+            response = self.DEVICE.read(self.DEVICE.in_waiting).decode(errors="ignore").replace('\r', '').replace('>', '').strip()
+            split_response = response.split(' ')
+            if len(split_response) > 2 and split_response[1] in self.COMMAND.FUNCTIONS:
+                res = self.COMMAND.FUNCTIONS[split_response[1]](response)
+                self.LOG.logResponse(command, response)
+                return {'command': command, 'response': res, 'timestamp':str(datetime.now())}
+                
+        except Exception as e:
+            print(f'Error on command: {command}: {e}')
+            return None

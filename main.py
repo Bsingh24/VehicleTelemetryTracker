@@ -2,13 +2,13 @@ from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from threading import Thread
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse
 from queue import Queue
 from OBD import OBD
+import asyncio
 
 obd = None
 PID = None
-# tracking_status = 'idle'
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -24,7 +24,10 @@ def initialize():
     global obd
     obd = OBD()
     if obd.PORTS.PORTS:
-        return {'success': True, 'ports': obd.PORTS.PORTS} # TO DO
+        ports = {}
+        for i, p in enumerate(obd.PORTS.PORTS):
+            ports[i] = p.device
+        return {'success': True, 'ports': ports}
     else:
         return {'success': False}
 
@@ -36,15 +39,15 @@ async def connectPort(request: Request):
     obd.connect(selected_port)
     PIDList = obd.supportedPIDs()
     return {'device': obd.PORTS.PORTS[selected_port], 'PIDList': PIDList}
-    # return {'device': 0, 'PIDList': [('11', 'Port A'), ('12', 'Port B')]}
         
 @app.post('/trackpids')
 async def trackPIDs(request: Request):
     global obd
     global PID
-    json_data = await request.json()
-    PID = json_data['PIDS']
-    # obd.waitCommand()
+    # json_data = await request.json()
+    # PID = json_data['PIDS']
+    PID = ['05', '0C', '0D', '0F', '11']
+    await asyncio.to_thread(obd.waitCommand())
     return {'status':'success'}
 
 
@@ -56,8 +59,16 @@ async def streamPIDs(websocket: WebSocket):
     queue = Queue()
 
     def run_generator():
-        for result in obd.sendCommand(PID):
-            queue.put(result)
+        while obd.checkRPM():
+            for c in PID:
+                command = '01' + c
+                result = obd.singleCommand(command)
+                if result is not None:
+                    result['pid'] = c
+                    queue.put(result)
+        print('Engine off...stopping recording..saving data')
+        obd.COMMAND.saveData()
+        obd.LOG.saveLogs()
         queue.put(None)
 
     thread = Thread(target=run_generator, daemon=True)
@@ -71,3 +82,7 @@ async def streamPIDs(websocket: WebSocket):
             await websocket.send_json(result)
     except WebSocketDisconnect:
         print("Client Disconnected")
+
+@app.get("/tracking")
+async def tracking_page():
+    return FileResponse("tracking.html") 
