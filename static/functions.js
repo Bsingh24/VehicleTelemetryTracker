@@ -36,6 +36,7 @@ async function connectToPort() {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({selected_port: portValue})});
+
     const data = await response.json();
     console.log(data);
     document.getElementById('buttoncheck').innerText = `Connected with device ${data.device.name} (${portValue})`;
@@ -84,5 +85,11 @@ async function PIDSubmission(n) {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({PIDS: SELECTED_PIDS})});
+        
+        const data = await response.json();
+        console.log(data)
+
+        const pidsParam = encodeURIComponent(SELECTED_PIDS.join(','));
+        window.location.href = `/tracking?pids=${pidsParam}`;
     }
 }
