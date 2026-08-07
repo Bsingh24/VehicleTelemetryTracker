@@ -24,3 +24,7 @@ Currently this has only been tested on a handful of vehicles. It would be highly
 | 2005 Toyota Corolla |
 | 2017 Toyota Corolla |
 | 2022 Kia K5 | 
+
+
+## License
+This project is licensed under the PolyForm Noncommercial License 1.0.0 — see the [LICENSE](https://github.com/Bsingh24/VehicleTelemetryTracker/blob/main/LICENSE) file for details.
