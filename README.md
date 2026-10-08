@@ -7,7 +7,8 @@ This project utilizes OBD II diagnostic tools in order to retrieve and parse inf
 * Create an environment and `pip install -r requirements.txt`. This will download all the necessary libraries and tools you need to run this project.
 # Demos
 As the app updates and more vehicles are tested, more demos will be posted.
-<video src="https://github.com/user-attachments/assets/78f844e9-32c0-4d29-a802-0968614e1800" controls></video>
+
+https://github.com/user-attachments/assets/78f844e9-32c0-4d29-a802-0968614e1800
 # How to Run
 You have two options on how you want to run it:
 1. Import `OBD.py` and call the functions needed. It will run in the background as you drive and save the information once you are finished. See `mainOBD.py` for reference.
